@@ -41,7 +41,7 @@ else:
             thekey text,
             col1 text,
             col2 text,
-            PRIMARY KEY (thekey, col1)
+            PRIMARY KEY (thekey)
         )
         """)
 
@@ -60,8 +60,14 @@ class firstBolt(SimpleBolt):
     OUTPUT_FIELDS = ['data']
 
     def initialize(self):
-        self.unoccCabs = {}
+        self.busyStreets = {}
         self.i = 0
+        cluster = Cluster(['54.175.15.242'])
+        session = cluster.connect()
+        session.set_keyspace("configurations")
+        rows = session.execute("SELECT * FROM conf WHERE pid = '%s'" % 'storm')
+        self.cc = rows[0].cc
+        self.new = False
 
     def process_tuple(self, tup):
         #log.debug(tup)
@@ -72,34 +78,32 @@ class firstBolt(SimpleBolt):
 
         for street in listofstreets:
             stID, direction, lane, carCount = street.split(',')
-            #if self.i % 10000 is 0:
-                #log.debug("Processed %d streets." % self.i)
             try:
                 if not carCount or carCount is ' ':
                     carCount = '0'
                 num = int(carCount)
-                if num >= 2000:
+                if num >= 2000:  # int(self.cc):
                     self.i += 1
-                    log.debug(stID + "," + timestamp + "," + direction + "," + lane + "," + str(num) + ", inserting %d into cassandra..." % self.i)
-                #break
+                    log.debug(stID + "," + timestamp + "," + direction + "," + lane + "," + str(num) + ", inserting %d into table..." % self.i)
+                    self.busyStreets[stID] = {'ts':timestamp, 'cc':str(num)}
+                    self.new = True
+                else:
+                    if num <= 20:
+                        if stID in self.busyStreets.keys():
+                            del self.busyStreets[stID]
+                            session.execute("DELETE FROM mytable WHERE thekey = '%s'" % stID)
+                            log.debug(stID + ' has been removed from table.')
+                            self.new = True
             except ValueError:
                 log.debug('carCount is an empty string!   ---   ' + timestamp + ' ' + street)
 
-
-            #if not carCount or carCount is '':    #
-            #    carCount = '0'
-            #log.debug(timestamp + ' - ' + carCount)
-            #if int(carCount) > 2000:
-            #    log.debug(stID + "," + timestamp + "," + direction + "," + lane + "," + carCount + ", inserting %d into cassandra..." % self.i)
-            #    #session.execute(query, dict(key = stID , a = timestamp, b = carCount))
-            #    self.i += 1
-
-    #def process_tick(self):
-    #    cur_cabs = self.unoccCabs
-    #    colDict = {}
-    #    for key, val in cur_cabs.iteritems():
-    #        colDict['c:' + key] = json.dumps(val) # Add currently available cabs to HBase
-    #    #minuteTbl.put('StormData', colDict)
+    def process_tick(self):
+        cur_streets = self.busyStreets
+        if self.new is True:
+            for stID, val in cur_streets.iteritems():
+                session.execute(query, dict(key = stID , a = val['ts'], b = val['cc']))
+                log.debug(stID + ' has been written into cassandra.')
+            self.new = False
 
 if __name__ == '__main__':
     logging.basicConfig(
