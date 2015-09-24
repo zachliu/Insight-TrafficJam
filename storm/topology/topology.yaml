@@ -2,6 +2,8 @@
 #
 name: topology
 #
+workers: 3
+
 topology:
 
 - spout:
@@ -10,12 +12,12 @@ topology:
         options:
             # The Kafka topic to stream from.
             # Required.
-            topic: my-topic
+            topic: traffic_1
 
             # ZooKeeper connection string. Comma-separated list of ZooKeeper
             # servers.
             # Required.
-            zk_hosts: 54.175.15.242:2181,54.175.16.201:2181,54.210.181.51:2181,54.174.222.20:2181
+            zk_hosts: 54.175.15.242:2181,54.175.16.201:2181,54.174.231.68:2181,54.174.222.20:2181
 
             # 172.31.6.220:2181, 172.31.6.221:2181
 
@@ -42,5 +44,7 @@ topology:
         tick_freq_secs: 5.0
         groupings:
             - shuffle_grouping: kafka-spout
-            
+        parallelism_hint: 3
+        tasks: 6
+
 

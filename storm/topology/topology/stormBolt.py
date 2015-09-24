@@ -64,24 +64,35 @@ class firstBolt(SimpleBolt):
         self.i = 0
 
     def process_tuple(self, tup):
-        result, = tup.values
-        #cabID, lat, lng, occ, timestamp = result.split(",")
-        for k, value in result.items():
-            data = value
-        stID, timestamp, direction, lane, carCount = data.split(",")
+        #log.debug(tup)
 
-        #if (occ != '\N'):  # check to ensure that there are no null values
-        #    if int(occ) == 0:
-        #        self.unoccCabs[cabID] = {'c:lat': lat, 'c:lng': lng}  # add unoccupied cab to table
-        #    else:
-        #        if int(occ) == 1:
-        #            if (cabID in self.unoccCabs.keys()):
-        #                del self.unoccCabs[cabID]
-        #                #minuteTbl.delete('StormData', columns=['c:' + cabID]) # remove cab from table if it is now occupied
-        if int(carCount) > 2000:
-            log.debug(stID + "," + timestamp + "," + direction + "," + lane + "," + carCount + ", inserting %d into cassandra..." % self.i)
-            session.execute(query, dict(key="key%d" % self.i, a=stID, b=carCount))
-            self.i += 1
+        result, = tup.values
+        timestamp, data = result.split('@')
+        listofstreets = data.split('#')
+
+        for street in listofstreets:
+            stID, direction, lane, carCount = street.split(',')
+            #if self.i % 10000 is 0:
+                #log.debug("Processed %d streets." % self.i)
+            try:
+                if not carCount or carCount is ' ':
+                    carCount = '0'
+                num = int(carCount)
+                if num >= 2000:
+                    self.i += 1
+                    log.debug(stID + "," + timestamp + "," + direction + "," + lane + "," + str(num) + ", inserting %d into cassandra..." % self.i)
+                #break
+            except ValueError:
+                log.debug('carCount is an empty string!   ---   ' + timestamp + ' ' + street)
+
+
+            #if not carCount or carCount is '':    #
+            #    carCount = '0'
+            #log.debug(timestamp + ' - ' + carCount)
+            #if int(carCount) > 2000:
+            #    log.debug(stID + "," + timestamp + "," + direction + "," + lane + "," + carCount + ", inserting %d into cassandra..." % self.i)
+            #    #session.execute(query, dict(key = stID , a = timestamp, b = carCount))
+            #    self.i += 1
 
     #def process_tick(self):
     #    cur_cabs = self.unoccCabs
