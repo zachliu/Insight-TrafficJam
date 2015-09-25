@@ -15,7 +15,7 @@ def main():
 
     t = time.time()
     for i in range(1):    # about 2ms per query
-        stid = "530038"
+        stid = "530038"    # query about this stid
         rows = session.execute("SELECT * FROM header WHERE stid = '%s'" % stid)
         if len(rows) is 0:
             print stid + " not found in database"

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
 The script reads in a text file (header.csv) and writes the
-stid - stname table to cassandra.
+stid - (stnames) table to cassandra.
 '''
 from cassandra.cluster import Cluster
 from cassandra import ConsistencyLevel
