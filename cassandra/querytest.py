@@ -11,13 +11,16 @@ def main():
 
     cluster = Cluster(['54.175.15.242'])
     session = cluster.connect()
-    session.set_keyspace("station_header")
+    session.set_keyspace("station_geoloc")
 
     t = time.time()
     for i in range(1):    # about 2ms per query
-        stid = "044254"
+        stid = "530038"
         rows = session.execute("SELECT * FROM header WHERE stid = '%s'" % stid)
-        print rows[0].stid
+        if len(rows) is 0:
+            print stid + " not found in database"
+        else:
+            print rows[0].stid + ' ' + rows[0].lat + ' ' + rows[0].lon
 
     session.set_keyspace("configurations")
     rows = session.execute("SELECT * FROM conf WHERE pid = '%s'" % 'storm')
