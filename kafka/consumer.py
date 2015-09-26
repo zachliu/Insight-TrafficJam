@@ -41,13 +41,18 @@ def flush_to_hdfs(output_dir, topic):
     hadoop_dir = "%s/%s" % (output_dir, topic)
     hadoop_path = hadoop_dir + "/%s_%s.txt" % (timestamp, batch_counter)
     print "hdfs dfs -mkdir %s" % hadoop_dir
-    os.system("hdfs dfs -mkdir %s" % hadoop_dir)     # Issue command to create a directory
+    os.system("hdfs dfs -mkdir %s" % hadoop_dir)    # Issue command to create a directory
     print "hdfs dfs -put -f %s %s" % (tempfile_path, hadoop_path)
-    os.system("hdfs dfs -put -f %s %s" % (tempfile_path, hadoop_path))  # Store newly generated file
+
+    # Store newly generated file
+    os.system("hdfs dfs -put -f %s %s" % (tempfile_path, hadoop_path))
+
     os.remove(tempfile_path)
     batch_counter += 1
-    tempfile_path = "/tmp/kafka_%s_%s_%s_%s.txt" % (topic, group, timestamp, batch_counter) # identify file by the group, topic and timestamp
-    tempfile = open(tempfile_path,"w")
+
+    # identify file by the group, topic and timestamp
+    tempfile_path = "/tmp/kafka_%s_%s_%s_%s.txt" % (topic, group, timestamp, batch_counter)
+    tempfile = open(tempfile_path, "w")
 
 
 # Function for storing data from the producer into a temporary file
@@ -63,24 +68,25 @@ def consume_topic(topic, group, output_dir, frequency):
     tempfile = open(tempfile_path, "w")
     #log_has_at_least_one = False #did we log at least one entry?
     while True:
-        messages = kafka_consumer.get_messages(count=1, block=False)  # get 1000 messages at a time, non blocking
+        # get 1000 messages at a time, non blocking
+        messages = kafka_consumer.get_messages(count=100, block=False)
         if not messages:
             #print "no messages to read"
             continue   # If no messages are received, wait until there are more
         for message in messages:
             #log_has_at_least_one = True
-            print(message.message.value)
-            tempfile.write(message.message.value + "\n")
-        if tempfile.tell() > 1000:  # file size > 1KB
-	    print "Note: file is big enough to write to hdfs!!!!!!!!!!"
+            #print(message.message.value)
+            #tempfile.write(message.message.value + "\n")    # lose the '\n'?
+            tempfile.write(message.message.value)
+        if tempfile.tell() > 80000000:  # file size > 80MB
+	    print "Note: file is large enough to write to hdfs. Writing now..."
             flush_to_hdfs(output_dir, topic)
         kafka_consumer.commit()  # inform zookeeper of position in the kafka queue
-    #
 
 if __name__ == '__main__':
     group = "batchStore"
     output = "/user/TestData"
-    topic = "my-topic"
+    topic = "traffic_1"
     frequency = "1"
 
     print "\nConsuming topic: [%s] into HDFS" % topic

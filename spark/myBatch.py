@@ -1,26 +1,10 @@
 from pyspark import SparkContext, SparkConf
 import pyspark_cassandra
-
-def myParser(line):
-    b = line.split(",")
-    return [b[0], b[-1]]
-
-
-conf = SparkConf().setAppName("myBatch")
-sc = SparkContext(conf=conf)
-data = sc.textFile("hdfs://ec2-54-175-15-242.compute-1.amazonaws.com:9000/user/TestData/my-topic/20150920193500_0.txt")
-formatted_data = data.map(lambda line: myParser(line)).reduceByKey(lambda a,b: (int(a)+int(b)))
-res = formatted_data.collect()
-
-for val in res:
-    print val
-
-print "Reading data from the HDFS"
-
 from cassandra import ConsistencyLevel
 from cassandra.cluster import Cluster
 from cassandra.query import SimpleStatement
 
+# set up cassandra
 cluster = Cluster(['54.175.15.242'])
 session = cluster.connect()
 KEYSPACE = "keyspace_batch"
@@ -45,7 +29,7 @@ else:
         thekey text,
         col1 text,
         col2 text,
-        PRIMARY KEY (thekey, col1)
+        PRIMARY KEY (thekey)
         )
         """)
 
@@ -62,16 +46,39 @@ query = SimpleStatement("""
     VALUES (%(key)s, %(a)s, %(b)s)
     """, consistency_level=ConsistencyLevel.ONE)
 
+
+# parse each line using only the 1st (stid) and the last element (car count)
+def myParser(line):
+    #if not line:
+    ts, data = line.split('@')
+    rows = data.split('#')
+    lol = []    # list of lists
+    for row in rows:
+        foi = row.split(",")
+        lol.append([foi[0], foi[-1]])
+    return lol
+
+
+print "Reading data from the HDFS"
+conf = SparkConf().setAppName("myBatch")
+sc = SparkContext(conf=conf)
+data = sc.textFile("hdfs://ec2-54-175-15-242.compute-1.amazonaws.com:9000/user/TestData/traffic_1/20150925151400_0.txt")
+
+# map reduce jop
+formatted_data = data.flatMap(lambda line: myParser(line)).reduceByKey(lambda a, b: (int(a) + int(b)))
+
+res = formatted_data.collect()    # colloect the result
+for val in res:
+    print val
+
+print "Writing collected data to Cassandra"
 # write individual entries to cassandra
 for val in res:
-    i = 122330
+    i = 0
     session.execute(query, dict(key="key%d" % i, a=val[0], b=str(val[1])))
     i += 1
 
-print "Writing data to Cassandra"
-
-print "Test for pyspark_cassandra"
-
+print "Writing RDD to Cassandra (pyspark_cassandra)"
 # write rdd to cassandra
 formatted_data.saveToCassandra(
     "keyspace_batch",
