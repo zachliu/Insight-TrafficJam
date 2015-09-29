@@ -12,12 +12,12 @@ topology:
         options:
             # The Kafka topic to stream from.
             # Required.
-            topic: traffic_1
+            topic: traffic
 
             # ZooKeeper connection string. Comma-separated list of ZooKeeper
             # servers.
             # Required.
-            zk_hosts: 54.175.15.242:2181,54.175.16.201:2181,54.174.231.68:2181,54.174.222.20:2181
+            zk_hosts: 54.174.177.48:2181,54.174.130.68:2181,54.174.214.154:2181,52.23.230.157:2181
 
             # 172.31.6.220:2181, 172.31.6.221:2181
 

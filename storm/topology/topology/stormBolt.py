@@ -13,7 +13,8 @@ from cassandra.query import SimpleStatement
 #connection = happybase.Connection('54.67.126.144')
 #minuteTbl = connection.table('avlbl_Cabs')
 
-cluster = Cluster(['54.175.15.242'])
+#cluster = Cluster(['54.175.15.242'])
+cluster = Cluster(['54.174.177.48'])
 session = cluster.connect()
 KEYSPACE = "keyspace_realtime"
 
@@ -55,6 +56,7 @@ prepared = session.prepare("""
     VALUES (?, ?, ?)
     """)
 
+
 class firstBolt(SimpleBolt):
 
     OUTPUT_FIELDS = ['data']
@@ -62,7 +64,8 @@ class firstBolt(SimpleBolt):
     def initialize(self):
         self.busyStreets = {}
         self.i = 0
-        cluster = Cluster(['54.175.15.242'])
+        #cluster = Cluster(['54.175.15.242'])
+        cluster = Cluster(['54.174.177.48'])
         session = cluster.connect()
         session.set_keyspace("configurations")
         rows = session.execute("SELECT * FROM conf WHERE pid = '%s'" % 'storm')
@@ -84,8 +87,9 @@ class firstBolt(SimpleBolt):
                 num = int(carCount)
                 if num >= 2000:  # int(self.cc):
                     self.i += 1
-                    log.debug(stID + "," + timestamp + "," + direction + "," + lane + "," + str(num) + ", inserting %d into table..." % self.i)
-                    self.busyStreets[stID] = {'ts':timestamp, 'cc':str(num)}
+                    log.debug(stID + "," + timestamp + "," + direction + "," +
+                        lane + "," + str(num) + ", inserting %d into table..." % self.i)
+                    self.busyStreets[stID] = {'ts': timestamp, 'cc': str(num)}
                     self.new = True
                 else:
                     if num <= 20:
@@ -101,7 +105,7 @@ class firstBolt(SimpleBolt):
         cur_streets = self.busyStreets
         if self.new is True:
             for stID, val in cur_streets.iteritems():
-                session.execute(query, dict(key = stID , a = val['ts'], b = val['cc']))
+                session.execute(query, dict(key=stID, a=val['ts'], b=val['cc']))
                 log.debug(stID + ' has been written into cassandra.')
             self.new = False
 

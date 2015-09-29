@@ -5,7 +5,8 @@ from cassandra.cluster import Cluster
 from cassandra.query import SimpleStatement
 
 # set up cassandra
-cluster = Cluster(['54.175.15.242'])
+#cluster = Cluster(['54.175.15.242'])
+cluster = Cluster(['54.174.177.48'])
 session = cluster.connect()
 KEYSPACE = "keyspace_batch"
 
@@ -62,7 +63,8 @@ def myParser(line):
 print "Reading data from the HDFS"
 conf = SparkConf().setAppName("myBatch")
 sc = SparkContext(conf=conf)
-data = sc.textFile("hdfs://ec2-54-175-15-242.compute-1.amazonaws.com:9000/user/TestData/traffic_1/20150925151400_0.txt")
+#data = sc.textFile("hdfs://ec2-54-175-15-242.compute-1.amazonaws.com:9000/data/traffic/20150925151400_0.txt")
+data = sc.textFile("hdfs://ec2-54-174-177-48.compute-1.amazonaws.com:9000/data/traffic/20150925151400_0.txt")
 
 # map reduce jop
 formatted_data = data.flatMap(lambda line: myParser(line)).reduceByKey(lambda a, b: (int(a) + int(b)))

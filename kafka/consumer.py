@@ -1,6 +1,8 @@
-# this program implements a kafka consumer that stores a data stream to HDFS. It is subscribed to one topic (all cab data).
+# this program implements a kafka consumer that stores a data stream to HDFS.
+# It is subscribed to one topic (all cab data).
+
 import os
-import sys
+#import sys
 from kafka import KafkaClient, SimpleConsumer
 from datetime import datetime
 
@@ -79,14 +81,14 @@ def consume_topic(topic, group, output_dir, frequency):
             #tempfile.write(message.message.value + "\n")    # lose the '\n'?
             tempfile.write(message.message.value)
         if tempfile.tell() > 80000000:  # file size > 80MB
-	    print "Note: file is large enough to write to hdfs. Writing now..."
+            print "Note: file is large enough to write to hdfs. Writing now..."
             flush_to_hdfs(output_dir, topic)
         kafka_consumer.commit()  # inform zookeeper of position in the kafka queue
 
 if __name__ == '__main__':
     group = "batchStore"
-    output = "/user/TestData"
-    topic = "traffic_1"
+    output = "/data"
+    topic = "traffic"
     frequency = "1"
 
     print "\nConsuming topic: [%s] into HDFS" % topic

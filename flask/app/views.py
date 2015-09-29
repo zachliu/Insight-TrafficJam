@@ -13,7 +13,8 @@ import json
 #def hello():
 #    return "StID, Car Count"
 
-cluster = Cluster(['54.175.15.242'])
+#cluster = Cluster(['54.175.15.242'])
+cluster = Cluster(['54.174.177.48'])
 session_real = cluster.connect()
 session_batch = cluster.connect()
 session_rdd = cluster.connect()

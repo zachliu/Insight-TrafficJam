@@ -15,7 +15,8 @@ def main():
 
     t = time.time()
 
-    cluster = Cluster(['54.175.15.242'])
+    #cluster = Cluster(['54.175.15.242'])
+    cluster = Cluster(['54.174.177.48'])
     session = cluster.connect()
     KEYSPACE = "configurations"
 
