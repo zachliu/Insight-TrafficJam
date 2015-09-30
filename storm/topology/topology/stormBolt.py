@@ -85,14 +85,14 @@ class firstBolt(SimpleBolt):
                 if not carCount or carCount is ' ':
                     carCount = '0'
                 num = int(carCount)
-                if num >= 2000:  # int(self.cc):
+                if num >= 100:  # int(self.cc):
                     self.i += 1
                     log.debug(stID + "," + timestamp + "," + direction + "," +
                         lane + "," + str(num) + ", inserting %d into table..." % self.i)
                     self.busyStreets[stID] = {'ts': timestamp, 'cc': str(num)}
                     self.new = True
                 else:
-                    if num <= 20:
+                    if num <= 10:
                         if stID in self.busyStreets.keys():
                             del self.busyStreets[stID]
                             session.execute("DELETE FROM mytable WHERE thekey = '%s'" % stID)

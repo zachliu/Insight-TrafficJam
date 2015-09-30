@@ -46,7 +46,7 @@ def send_message(topic):
                 msg_bulk = []
                 #raw_input("Press Enter to send the next bulk...")
                 # Creating some delay to allow proper rendering of the locations on the map
-                time.sleep(0.1)
+                time.sleep(0.5)
                 #k = 0
                 #break
         bar.finish()
