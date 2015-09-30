@@ -18,6 +18,7 @@ cluster = Cluster(['54.174.177.48'])
 session_real = cluster.connect()
 session_batch = cluster.connect()
 session_rdd = cluster.connect()
+session = cluster.connect()
 findname = cluster.connect()
 findcoor = cluster.connect()
 findroad = cluster.connect()
@@ -161,40 +162,31 @@ def cassandra_test3():
 
 
 # ###################################################################################
-# # top ten zip codes - daily
-# @app.route('/top_ten_zipcode_daily')
-# def top_ten_batch_zipcode_daily_search():
-#     time_now_minus_two = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%S")
-#     return render_template("popular_zipcode_daily_search.html", time_now_minus_two=time_now_minus_two)
-#
-# @app.route("/top_ten_zipcode_daily", methods=['POST'])
-# def top_ten_batch_zipcode_daily_post():
-#     search_date = request.form["search_date"]
-#     time_range = '[' + search_date + ']'
-#
-#     m = re.search('(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):\d\d:\d\d', search_date)
-#     search_date = m.group(1) + "" + m.group(2) + "" + m.group(3)
-#
-#     stmt = "SELECT house_zipcode, count FROM trending_zipcode_by_day WHERE date = %s ALLOW FILTERING"
-#     response = session.execute(stmt, parameters=[int(search_date)])
-#
-#     tmp_dict = {}
-#     for val in response:
-#         tmp_dict[val.house_zipcode] = val.count
-#
-#     tmp_dict_descending = OrderedDict(sorted(tmp_dict.items(), key=lambda kv: kv[1], reverse=True))
-#
-#     counter = 0
-#     jsonresponse = []
-#     for key in tmp_dict_descending:
-#         if counter <= 10:
-#             jsonresponse.append({"house_zipcode": key, "count": tmp_dict_descending[key]})
-#         else:
-#             break
-#         counter += 1
-#
-#     jsonresponse = list(reversed(jsonresponse))
-#     return render_template("popular_zipcode_daily.html", time_range=time_range, jsonresponse=jsonresponse)
+# top ten zip codes - daily
+#@app.route('/top_ten_zipcode_daily')
+#def top_ten_batch_zipcode_daily_search():
+    #time_now_minus_two = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%S")
+    #return render_template("popular_zipcode_daily_search.html", time_now_minus_two=time_now_minus_two)
+
+@app.route("/batch_test_2")
+def hichart():
+
+    stmt = "SELECT yyyymm, carcount FROM keyspace_batch.mytable_RDD WHERE roadid = 940069"
+    response = session.execute(stmt)
+
+    tmp_dict = {}
+    for val in response:
+        print val
+        tmp_dict[val.yyyymm] = val.carcount
+
+    #tmp_dict_descending = OrderedDict(sorted(tmp_dict.items(), key=lambda kv: kv[1], reverse=True))
+
+    jsonresponse = []
+    for key in tmp_dict:
+        jsonresponse.append({"yyyymm": key, "carcount": tmp_dict[key]})
+
+    jsonresponse = list(reversed(jsonresponse))
+    return render_template("batch_test.html", jsonresponse=jsonresponse)
 
 
 if __name__ == "__main__":

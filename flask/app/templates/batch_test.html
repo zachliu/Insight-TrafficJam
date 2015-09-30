@@ -8,7 +8,7 @@
 {% endblock %}
 {% block scripts %}
 <script type="text/javascript">
-$(function () { 
+$(function () {
     $('#container').highcharts({
         chart: {
             type: 'bar'
@@ -33,11 +33,11 @@ $(function () {
         series: [
         {% for val in jsonresponse %}
             {
-                name: {{ val.house_zipcode }},
-                data: [{{ val.count }}]
+                name: {{ val.yyyymm }},
+                data: [{{ val.carcount }}]
             },
         {% endfor %}
-        ]        
+        ]
     });
 });
 </script>

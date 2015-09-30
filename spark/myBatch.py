@@ -36,9 +36,9 @@ else:
 
     session.execute("""
         CREATE TABLE mytable_RDD (
-        roadid text,
-        yyyymm text,
-        carcount text,
+        roadid int,
+        yyyymm int,
+        carcount int,
         PRIMARY KEY (roadid, yyyymm)
         )
         """)
@@ -59,7 +59,7 @@ def myParser(line):
     lol = []    # list of lists
     for row in rows:
         foi = row.split(",")
-        lol.append([(foi[0], ts_yyyy + ts_mm), foi[-1]])
+        lol.append([(int(foi[0]), int(ts_yyyy + ts_mm)), foi[-1]])
         #lol.append([foi[0], foi[-1]])
     return lol
 
@@ -75,9 +75,9 @@ formatted_data = data.flatMap(lambda line: myParser(line)).\
                 reduceByKey(lambda a, b: (int(a) + int(b))).\
                 map(lambda x: ((x[0][0], x[0][1], x[1])))
 
-res = formatted_data.collect()    # colloect the result
-for val in res:
-    print val
+#res = formatted_data.collect()    # colloect the result
+#for val in res:
+    #print val
 
 #print "Writing collected data to Cassandra"
 ## write individual entries to cassandra
