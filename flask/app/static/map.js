@@ -17,7 +17,7 @@ function initialize() {
 	center: NY
     };
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-/*
+
     google.maps.event.addListener(map, "rightclick", function(event) {
         var lat = event.latLng.lat();
         var lng = event.latLng.lng();
@@ -42,6 +42,10 @@ function initialize() {
                     map: map
                 });
                 google.maps.event.addListener(route, "click", function(event) {
+                    //var lat = event.latLng.lat();
+                    //var lng = event.latLng.lng();
+                    // populate yor box/field with lat, lng
+                    //alert("Lat=" + lat + "; Lng=" + lng);
                     //alert(this.title)
                     var base_url = "http://54.174.177.48/batch/";
                     var key = this.title;
@@ -51,9 +55,9 @@ function initialize() {
             }
         }
     );
-*/
 }
 
+/*
 function chooseColor(cc) {
     if (cc > 2000) {
         return Colors[3];
@@ -68,7 +72,9 @@ function chooseColor(cc) {
         return Colors[0];
     }
 }
+*/
 
+/*
 function update_values_road_test() {
     $.getJSON('/realtime_roads',
         function(data) {
@@ -105,15 +111,18 @@ function update_values_road_test() {
     );
     window.setTimeout(update_values_road_test, 2500);
 }
+*/
 
 //update_values();
-update_values_road_test();
+//update_values_road_test();
 
+/*
 function clearRoads() {
     for (var i = 0; i < roads.length; i++) {
 	roads[i].setMap(null);
     }
     roads = [];
 }
+*/
 
 google.maps.event.addDomListener(window, 'load', initialize);

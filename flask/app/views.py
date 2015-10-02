@@ -61,21 +61,21 @@ def realtime_roads():
     return jsonify(roads=roads)
 
 
-#@app.route('/all_roads')
-#def all_roads():
-    #session_all.set_keyspace("road_geoloc")
-    #rows = session_all.execute("SELECT * FROM header")
-    #roads = []
-    #for row in rows:
-        #stid = row[0].split('\'')[0]
-        #locstring = row[1].split('\'')[0]
-        #if len(locstring) is not 0:
-            #roadloc = []
-            #listofpairs = locstring.split(';')
-            #for entry in listofpairs:
-                #roadloc.append(entry.split(','))
-            #roads.append({'name': stid, 'roadloc': roadloc})
-    #return jsonify(roads=roads)
+@app.route('/all_roads')
+def all_roads():
+    session_all.set_keyspace("road_geoloc")
+    rows = session_all.execute("SELECT * FROM header")
+    roads = []
+    for row in rows:
+        stid = row[0].split('\'')[0]
+        locstring = row[1].split('\'')[0]
+        if len(locstring) is not 0:
+            roadloc = []
+            listofpairs = locstring.split(';')
+            for entry in listofpairs:
+                roadloc.append(entry.split(','))
+            roads.append({'name': stid, 'roadloc': roadloc})
+    return jsonify(roads=roads)
 
 
 @app.route("/batch/<stid>")
