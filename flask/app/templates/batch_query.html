@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="container" style="width:70%; height:700px; margin: 0 auto;">
+</div>
+{% endblock %}
+{% block highcharts %}
+        <script src="http://code.highcharts.com/highcharts.js"></script>
+        <script src="http://code.highcharts.com/modules/exporting.js"></script>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+$(function () {
+    $('#container').highcharts({
+        chart: {
+            type: 'spline'
+
+        },
+        title: {
+            text: 'Monthly Total Volume',
+            x: -20 //center
+        },
+        subtitle: {
+            text: 'Source: www.dot.ny.gov',
+            x: -20
+        },
+        xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        },
+        yAxis: {
+            title: {
+                text: 'Car Counts'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'center',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [
+            {
+                name: '{{stname}}',
+                data: {{array}}
+            }
+        ]
+    });
+});
+</script>
+{% endblock %}

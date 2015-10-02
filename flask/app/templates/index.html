@@ -8,7 +8,7 @@
   <meta http-equiv="content-type" content="text/html; charset=windows-1252" />
   <link rel="stylesheet" type="text/css" href="static/style.css" />
   <!-- modernizr enables HTML5 elements and feature detects -->
-  <script type="text/javascript" src="static/modernizr-1.5.min.js"></script>
+  <!--<script type="text/javascript" src="static/modernizr-1.5.min.js"></script> -->
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script type="text/javascript"
     src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true">
@@ -41,7 +41,13 @@
 	<h3>A simulated real-time feed of traffic data from New York State Department of Transportation</h3>
       </div><!--close content-->
     <div id="map-container">
-       <div id="map-canvas"></div>
+        <div id="floating-panel">
+            <button onclick="toggleNetwork()">Toggle road network</button>
+            <button onclick="changeGradient()">Realtime traffic</button>
+            <!--<button onclick="changeRadius()">Change radius</button>-->
+            <!--<button onclick="changeOpacity()">Change opacity</button>-->
+        </div>
+        <div id="map-canvas"></div>
     </div>
     <div id="content">
       <div class="content_item">
