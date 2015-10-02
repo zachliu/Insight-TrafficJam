@@ -16,6 +16,17 @@ session_batch = cluster.connect()
 session_findname = cluster.connect()
 session_findloc = cluster.connect()
 
+session_findloc.set_keyspace("road_geoloc")
+start = time.time()
+lookup = {}
+cass = session_findloc.execute("SELECT * FROM header")
+#print cass
+
+for e in cass:
+    lookup[str(e.stid)] = str(e.coord)
+print time.time() - start
+#print lookup
+
 
 @app.route('/')
 @app.route('/index')
@@ -37,19 +48,19 @@ def aboutme():
 def realtime_roads():
     session_real.set_keyspace("keyspace_realtime")
     rows = session_real.execute("SELECT * FROM mytable")
-    session_findloc.set_keyspace("road_geoloc")
+    #session_findloc.set_keyspace("road_geoloc")
     roads = []
     total = 0
 
-    start = time.time()
-    lookup = {}
-    cass = session_findloc.execute("SELECT * FROM header")
-    #print cass
+    #start = time.time()
+    #lookup = {}
+    #cass = session_findloc.execute("SELECT * FROM header")
+    ##print cass
 
-    for e in cass:
-        lookup[str(e.stid)] = str(e.coord)
-    print time.time() - start
-    #print lookup
+    #for e in cass:
+        #lookup[str(e.stid)] = str(e.coord)
+    #print time.time() - start
+    ##print lookup
 
     for row in rows:
         stid = str(row[0].split('\'')[0])
