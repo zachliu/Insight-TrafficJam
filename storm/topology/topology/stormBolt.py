@@ -85,19 +85,19 @@ class firstBolt(SimpleBolt):
                 if not carCount or carCount is ' ':
                     carCount = '0'
                 num = int(carCount)
-                if num >= 100:  # int(self.cc):
+                if num >= 0:  # int(self.cc):
                     self.i += 1
-                    log.debug(stID + "," + timestamp + "," + direction + "," +
-                        lane + "," + str(num) + ", inserting %d into table..." % self.i)
+                    #log.debug(stID + "," + timestamp + "," + direction + "," +
+                        #lane + "," + str(num) + ", inserting %d into table..." % self.i)
                     self.busyStreets[stID] = {'ts': timestamp, 'cc': str(num)}
                     self.new = True
-                else:
-                    if num <= 10:
-                        if stID in self.busyStreets.keys():
-                            del self.busyStreets[stID]
-                            session.execute("DELETE FROM mytable WHERE thekey = '%s'" % stID)
-                            log.debug(stID + ' has been removed from table.')
-                            self.new = True
+                #else:
+                    #if num <= 10:
+                        #if stID in self.busyStreets.keys():
+                            #del self.busyStreets[stID]
+                            #session.execute("DELETE FROM mytable WHERE thekey = '%s'" % stID)
+                            ##log.debug(stID + ' has been removed from table.')
+                            #self.new = True
             except ValueError:
                 log.debug('carCount is an empty string!   ---   ' + timestamp + ' ' + street)
 
@@ -106,7 +106,7 @@ class firstBolt(SimpleBolt):
         if self.new is True:
             for stID, val in cur_streets.iteritems():
                 session.execute(query, dict(key=stID, a=val['ts'], b=val['cc']))
-                log.debug(stID + ' has been written into cassandra.')
+                #log.debug(stID + ' has been written into cassandra.')
             self.new = False
 
 if __name__ == '__main__':

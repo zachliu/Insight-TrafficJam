@@ -41,7 +41,7 @@ topology:
 - bolt:
         name: test-bolt
         module: topology.stormBolt
-        tick_freq_secs: 1.0
+        tick_freq_secs: 2.5
         groupings:
             - shuffle_grouping: kafka-spout
         parallelism_hint: 3

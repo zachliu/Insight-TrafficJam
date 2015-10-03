@@ -44,6 +44,27 @@ def aboutme():
     return render_template('aboutme.html')
 
 
+Colors = [
+    "#20CA20",    # green
+    "#FF5800",    # purple
+    "#F50000",    # red
+    "#941313"     # dark red
+]
+
+
+def chooseColor(cc):
+    cc = int(cc)
+    if cc > 2000:
+        return Colors[3]
+    elif cc > 1000:
+        return Colors[2]
+    elif cc > 500:
+        return Colors[1]
+    else:
+        return Colors[0]
+
+hashtable = {}
+
 @app.route('/realtime_roads')
 def realtime_roads():
     session_real.set_keyspace("keyspace_realtime")
@@ -64,21 +85,24 @@ def realtime_roads():
 
     for row in rows:
         stid = str(row[0].split('\'')[0])
-        cc = row[2].split('\'')[0]
-        start = time.time()
-        locstring = ''
-        if stid in lookup:
-            locstring = lookup[stid]
-        #locstring = session_findloc.execute("SELECT * FROM header WHERE stid = '%s'" % stid)
-        total += time.time() - start
+        cc = str(row[2].split('\'')[0])
 
-        if len(locstring) is not 0:
-            roadloc = []
-            #listofpairs = locstring[0].coord.split(';')
-            listofpairs = locstring.split(';')
-            for entry in listofpairs:
-                roadloc.append(entry.split(','))
-            roads.append({'name': stid, 'carcount': cc, 'roadloc': roadloc})
+        if (stid not in hashtable) or ((stid in hashtable) and (hashtable[stid] is not chooseColor(cc))):
+            hashtable[stid] = chooseColor(cc)
+            start = time.time()
+            locstring = ''
+            if stid in lookup:
+                locstring = lookup[stid]
+            #locstring = session_findloc.execute("SELECT * FROM header WHERE stid = '%s'" % stid)
+            total += time.time() - start
+
+            if len(locstring) is not 0:
+                roadloc = []
+                #listofpairs = locstring[0].coord.split(';')
+                listofpairs = locstring.split(';')
+                for entry in listofpairs:
+                    roadloc.append(entry.split(','))
+                roads.append({'name': stid, 'carcount': cc, 'roadloc': roadloc})
     print "refresh realtime roads info " + str(len(roads)) + " " + str(total)
     return jsonify(roads=roads)
 

@@ -4,11 +4,13 @@ var map;
 var roads = [];
 var all_roads = [];
 var REFRESH = 0;
-var hashtable = {};
+var routetable = {};
+var colortable = {};
+var autotimer;
 
 var Colors = [
     "#20CA20",    // green
-    "#B610FF",    // purple
+    "#FF5800",    //
     "#F50000",    // red
     "#941313"     // dark red
 ];
@@ -64,17 +66,18 @@ function initialize() {
 
 }
 
-function toggleNetwork() {
-    if (REFRESH == 1) {
-        alert("Stop refreshing");
-        REFRESH = 0;
-        update_values_smart();
-    }
-    else {
-        alert("Start refreshing");
+function startStreaming() {
+    if (!REFRESH) {
         REFRESH = 1;
         update_values_smart();
+        alert("Streaming is started");
     }
+}
+
+function stopStreaming() {
+    window.clearTimeout(autotimer);
+    REFRESH = 0;
+    alert("Streaming is stopped");
 }
 
 function chooseColor(cc) {
@@ -101,8 +104,11 @@ function update_values_smart() {
                 var cc = rds[i].carcount;
                 var stid = rds[i].name;
                 var color_str = chooseColor(Number(cc));
-                if (stid in hashtable) {
-                    hashtable[stid].setOptions({strokeColor: color_str});
+                if (stid in routetable) {
+                    if (colortable[stid] != color_str) {
+                        routetable[stid].setOptions({strokeColor: color_str});
+                        colortable[stid] = color_str;
+                    }
                 }
                 else {
                     var highlight = [];
@@ -122,21 +128,29 @@ function update_values_smart() {
                         var key = this.title;
                         window.open(base_url.concat(key));
                     });
-                    hashtable[stid] = route;
-                    //roads.push(route);
+                    routetable[stid] = route;
+                    colortable[stid] = color_str;
                 }
             }
         }
     );
+
+    if (REFRESH) {
+        autotimer = window.setTimeout(function(){ update_values_smart() }, 1000);
+    }
+
+
+/*
     if (REFRESH == 1) {
-        window.setTimeout(update_values_smart, 1500);
+        window.setTimeout(update_values_smart, 2000);
     }
     else {
         window.setTimeout(update_values_smart, 3600000);
     }
+*/
 }
 
-update_values_smart();
+//update_values_smart();
 
 /*
 function update_values() {

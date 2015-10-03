@@ -19,7 +19,10 @@ kafka = KafkaClient("localhost:9092")
 
 #source_file = '/home/zexi/data_sample.txt'
 #source_file = '/home/ubuntu/test_traffic_data.txt'
-source_file = '/home/ubuntu/VOL_2012_rev.csv'
+source_file = '/home/ubuntu/VOL_2001_rev.csv'
+#source_file = '/home/ubuntu/VOL_2002_rev.csv'
+#source_file = '/home/ubuntu/VOL_2003_rev.csv'
+#source_file = '/home/ubuntu/VOL_2004_rev.csv'
 
 nol = sum(1 for line in open(source_file))
 
@@ -31,7 +34,7 @@ bar = progressbar.ProgressBar(maxval=nol,
 def send_message(topic):
     producer = SimpleProducer(kafka)
     k = 1
-    bksize = 100  # bulk size
+    bksize = 25  # bulk size
     c = 0
     while k is 1:
         ifile = open(source_file)
@@ -46,7 +49,7 @@ def send_message(topic):
                 msg_bulk = []
                 #raw_input("Press Enter to send the next bulk...")
                 # Creating some delay to allow proper rendering of the locations on the map
-                time.sleep(0.5)
+                time.sleep(1.5)
                 #k = 0
                 #break
         bar.finish()
