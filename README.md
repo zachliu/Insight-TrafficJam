@@ -1,5 +1,5 @@
 #TrafficJam
-<img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/traffic.jpg" alt="alt text" width="500" height="300">
+<img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/traffic.jpg" alt="alt text" width="640" height="400">
 
 
 #Table of Contents
@@ -23,7 +23,7 @@ The project is based on historical traffic volume data for nearly 60,000 major r
 
 roadID, timestamp, car count
 
-<img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/rawdata.png" alt="alt text" width="300" height="200">
+<img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/rawdata.png" alt="alt text" width="272" height="143">
 
 **Real-Time:**
 The historical data set is played back to simulate real-time behavior.
@@ -32,7 +32,7 @@ The historical data set is played back to simulate real-time behavior.
 A distributed AWS cluster of four ec2 machines is being used for this project. All the components (ingestion, batch and real-time processing) are configured and run in distributed mode, with one master and 3 workers.
 
 #Data Processing Framework
-<img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/pipeline.png" alt="alt text" width="600" height="300">
+<img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/pipeline.png" alt="alt text" width="600" height="254">
 
 - **Ingestion Layer (Kafka):** The raw data is consumed by a message broker, configured in publish-subscribe mode. Related files: <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/kafka/producer.py">producer.py</a>, <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/kafka/kafka_consumer.py">kafka_consumer.py</a>.
 
@@ -71,7 +71,7 @@ The key for batch storage is organized as RoadID yyyymm.
 A Live Demo of the project is available here: <a href= "http://trafficjam.today">trafficjam.today</a> or <a href= "http://trafficjam.online">trafficjam.online</a>. A snap shot of the map with highlighted roads:
 
 
-<img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/realtime.png" alt="alt text" width="500" height="300">
+<img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/realtime.png" alt="alt text" width="707" height="542">
 
 #Presentation
 The presentation slides are available here:
