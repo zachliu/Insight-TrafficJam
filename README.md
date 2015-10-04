@@ -23,7 +23,7 @@ The project is based on historical traffic volume data for nearly 60,000 major r
 
 roadID, timestamp, car count
 
-<img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/raw_data.png" alt="alt text" width="300" height="200">
+<img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/rawdata.png" alt="alt text" width="300" height="200">
 
 **Real-Time:**
 The historical data set is played back to simulate real-time behavior.
@@ -47,76 +47,56 @@ A distributed AWS cluster of four ec2 machines is being used for this project. A
 - **Libraries and APIs:** Cassandra, Pyleus, Kafka-python
 
 #Data Transformations
-Following metrics are computed via a MapReduce operation on the raw dataset (MrJob):
-- Miles travelled (based on latitude and longitude)
-- Related Files: <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/MrJob/mr_hourly_job.py">mr_hourly_job.py</a>  
+Following metrics are computed via a MapReduce operation on the raw dataset (Spark):
+- Total car count in a month
+- Related Files: <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/spark/myBatch.py">myBatch.py</a>  
 
-The resulting table is aggregated using Hive to enable batch queries such as:
-- Time of day profile of pickups, dropoffs, miles travelled 
-- Day of the week profile of metrics 
-- Related files: <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/hive/create_aggregates.q">create_aggregates.q</a>
-- Some additional metrics calculated via hive: Pickup and Dropoff events
-
-The windowing operation in Hive is used for translating the continous time series data (by cab) into tables representing trips and associated durations.  
-- The information pertaining to individual trips is extracted via filtering on pickup and dropoff events (**1 million trips**)
-- Max idle time per day, per cab identifies potential drive shifts (contiguous block of idle time of driver)
-- Average trip times are also calculated
-- Related files: <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/hive/create_picks_drops.q">create_picks_drops.q</a>, <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/hive/create_agg_trips.q">create_agg_trips.q</a>, <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/hive/create_trips.q">create_trips.q</a> 
-
-Table below displays the transformed data: tripID (cabID_timestamp), day, month, year, idle time (secs), idle time (hours)
+Table below displays the transformed data: RoadID (RoadID_timestamp), year, month, total car count
 
 <img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/triptable.png" alt="alt text" width="400" height="250">
 
-**Hive Workflow:**
-
-<img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/hiveworkflow.png" alt="alt text" width="600" height="350">
 
 #Schemas
 
 **Batch Schema:**
-The key for batch storage is organized as yyyy_month_dayofweek. Each column represents an hour and the cells contain metrics for the hour. An additional column stores aggregate metrics for the whole day. This allows the same table to service two types of queries: hour of day and day of week profiles.
+The key for batch storage is organized as RoadID yyyymm.
+
 <img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/batchschema.png" alt="alt text" width="650" height="250">
 
-**Realtime Schema:**
-The realtime schema represents a city for each row (since there is only one city for the current data base, it has one row). The columns represent cabID (the ones that are available as filtered by Storm). The cells contain latitude longitude data.
-
-<img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/realtimeschema.png" alt="alt text" width="650" height="250">
-
 **Streaming Data**
-- The incoming data is filtered in real-time (simulated) based on occupancy to show available cabs. The storm topology comprises of one spout (kafka integrated) and one bolt. The bolt operates on a tick interval of 5 sec to collect data for 5 seconds before pushing it to HBase.
-- Related files: <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/Storm/cab_topology/cab_topology/stormBolt.py">stormBolt.py</a>, <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/Storm/cab_topology/cab_topology.yaml">cab_topology.yaml</a>
+- The incoming data is filtered in real-time (simulated). The storm topology comprises of one spout (kafka integrated) and one bolt. The bolt operates on a tick interval of 2.5 sec to collect data for 2.5 seconds before pushing it to Cassandra.
+- Related files: <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/Storm/cab_topology/cab_topology/stormBolt.py">stormBolt.py</a>, <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/Storm/cab_topology/topology.yaml">topology.yaml</a>
 
 #Live Demo:
-A Live Demo of the project is available here: www.mapmycab.org
-A snap shot of the map with cabs:
+A Live Demo of the project is available here: <a href= "http://trafficjam.today">trafficjam.today</a> or <a href= "http://trafficjam.online">trafficjam.online</a>. A snap shot of the map with highlighted roads:
 
 
 <img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/realtime.png" alt="alt text" width="500" height="300">
 
-#Presentation Deck
+#Presentation
 The presentation slides are available here:
-<a href= "http://54.183.182.89:5000/aboutme">www.mapmycab.org/aboutme</a>
+<a href= "http://trafficjam.today/slideshare">trafficjam.today/slideshare</a>
 
 #Instructions to Run this Pipeline
 
 Install python packages:
-```sudo pip install kafka-python happybase pyleus mrjob```
+```sudo pip install kafka-python cassandra-driver pyleus```
 
-Run the Kafka producer / consumer:
+Run the Kafka producer:
 ```python kafka/producer.py```
+
+Run the Kafka consumer:
 ```python kafka/kafka_consumer.py```
 
-Run MrJob:
-```python mr_hourly_job.py -r hadoop --hadoop-bin /usr/bin/hadoop hdfs:///<input file path> -o <output file path>```
+Run Spark:
+```spark-submit --packages TargetHolding/pyspark-cassandra:0.1.5 ~/Insight-TrafficJam/spark/myBatch.py```
 
-Run Hive Scripts
-```hive -f <filename>```
 
 Build storm topology:
-```pyleus build cab_topology.yaml```
+```pyleus build topology.yaml```
 
 Submit pyleus topology:
-```pyleus submit -n 54.153.51.200 cab_topology.jar```
+```pyleus submit -n 54.174.177.48 topology.jar```
 
 
 
