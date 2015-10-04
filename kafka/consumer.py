@@ -80,7 +80,7 @@ def consume_topic(topic, group, output_dir, frequency):
             #print(message.message.value)
             #tempfile.write(message.message.value + "\n")    # lose the '\n'?
             tempfile.write(message.message.value)
-        if tempfile.tell() > 120000000:  # file size > 80MB
+        if tempfile.tell() > 120000000:  # file size > 120MB
             print "Note: file is large enough to write to hdfs. Writing now..."
             flush_to_hdfs(output_dir, topic)
         kafka_consumer.commit()  # inform zookeeper of position in the kafka queue

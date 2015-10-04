@@ -1,25 +1,20 @@
-# This program creates a storm bolt that filters the incoming tuples based on occupancy
-# It stores the unoccupied cab details into HBase which are then shown on UI. The HBase
-# table is refreshed every 5 seconds using a tick tuple.
-import logging
+# This program creates a storm bolt that transfer the incoming tuples into Cassandra
+# which are then shown on UI. The Cassandra table is refreshed every 2.5 seconds using a tick tuple.
+
+#import logging
 import time
 from pyleus.storm import SimpleBolt
-#import happybase
-#import json
 
 from cassandra import ConsistencyLevel
 from cassandra.cluster import Cluster
 from cassandra.query import SimpleStatement
-
-#connection = happybase.Connection('54.67.126.144')
-#minuteTbl = connection.table('avlbl_Cabs')
 
 #cluster = Cluster(['54.175.15.242'])
 cluster = Cluster(['54.174.177.48'])
 session = cluster.connect()
 KEYSPACE = "keyspace_realtime"
 
-log = logging.getLogger('TestData')
+#log = logging.getLogger('TestData')
 
 #log.debug("creating keyspace...")
 
@@ -51,11 +46,6 @@ query = SimpleStatement("""
     INSERT INTO mytable (thekey, col1, col2)
     VALUES (%(key)s, %(a)s, %(b)s)
     """, consistency_level=ConsistencyLevel.ONE)
-
-prepared = session.prepare("""
-    INSERT INTO mytable (thekey, col1, col2)
-    VALUES (?, ?, ?)
-    """)
 
 
 class firstBolt(SimpleBolt):
@@ -92,35 +82,27 @@ class firstBolt(SimpleBolt):
                         #lane + "," + str(num) + ", inserting %d into table..." % self.i)
                     self.busyStreets[stID] = {'ts': timestamp, 'cc': str(num)}
                     self.new = True
-                #else:
-                    #if num <= 10:
-                        #if stID in self.busyStreets.keys():
-                            #del self.busyStreets[stID]
-                            #session.execute("DELETE FROM mytable WHERE thekey = '%s'" % stID)
-                            ##log.debug(stID + ' has been removed from table.')
-                            #self.new = True
             except ValueError:
                 err += 1
-                log.debug('carCount is an empty string!   ---   ' + timestamp + ' ' + street)
+                #log.debug('carCount is an empty string!   ---   ' + timestamp + ' ' + street)
 
     def process_tick(self):
         cur_streets = self.busyStreets
         if self.new is True:
-            start = time.time()
+            #start = time.time()
             cnt = 0
             for stID, val in cur_streets.iteritems():
                 session.execute(query, dict(key=stID, a=val['ts'], b=val['cc']))
                 cnt += 1
                 #log.debug(stID + ' has been written into cassandra.')
-            log.debug(str(time.time() - start) + ' ' + str(cnt))
+            #log.debug(str(time.time() - start) + ' ' + str(cnt))
             self.new = False
 
 if __name__ == '__main__':
-    logging.basicConfig(
-        level=logging.DEBUG,
-        filename='/tmp/TestData.log',
-        filemode='a',
-    )
-
+    #logging.basicConfig(
+        #level=logging.DEBUG,
+        #filename='/tmp/TestData.log',
+        #filemode='a',
+    #)
     firstBolt().run()
 
