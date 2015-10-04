@@ -1,5 +1,5 @@
 // Render the markers for cab locations on Google Maps
-var NY = new google.maps.LatLng(43.036821, -75.934096);
+var NY = new google.maps.LatLng(42.830474, -75.527311);
 var map;
 var roads = [];
 var all_roads = [];
@@ -21,49 +21,7 @@ function initialize() {
 	center: NY
     };
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-
-/*
-    $.getJSON('/all_roads',
-        function(data) {
-            net_layer = new google.maps.Data();
-            net_layer.addGeoJson(data);
-            net_layer.setMap(map);
-            //map.data.addGeoJson(data);
-        }
-    );
-*/
-
-/*
-    $.getJSON('/realtime_roads',
-        function(data) {
-            rds = data.roads
-            clearRoads();
-            for (var i = 0; i < rds.length; i = i + 1) {
-                var highlight = [];
-                var cc = rds[i].carcount;
-                var stid = rds[i].name;
-                for (var j = 0; j < rds[i].roadloc.length; j = j + 1) {
-                    highlight.push(new google.maps.LatLng(rds[i].roadloc[j][1], rds[i].roadloc[j][0]))
-                }
-                var route = new google.maps.Polyline({
-                    path: highlight,
-                    strokeColor: chooseColor(Number(cc)),
-                    strokeOpacity: 1,
-                    strokeWeight: 5,
-                    title: stid,
-                    map: map
-                });
-                google.maps.event.addListener(route, "click", function(event) {
-                    var base_url = "http://52.23.167.189/batch/";
-                    var key = this.title;
-                    window.open(base_url.concat(key));
-                });
-                roads.push(route);
-            }
-        }
-    );
-*/
-
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(new FullScreenControl(map));
 }
 
 function startStreaming() {
@@ -138,70 +96,6 @@ function update_values_smart() {
     if (REFRESH) {
         autotimer = window.setTimeout(function(){ update_values_smart() }, 1000);
     }
-
-
-/*
-    if (REFRESH == 1) {
-        window.setTimeout(update_values_smart, 2000);
-    }
-    else {
-        window.setTimeout(update_values_smart, 3600000);
-    }
-*/
 }
-
-//update_values_smart();
-
-/*
-function update_values() {
-    $.getJSON('/realtime_roads',
-        function(data) {
-            rds = data.roads;
-            clearRoads();
-            for (var i = 0; i < rds.length; i = i + 1) {
-                var highlight = [];
-                var cc = rds[i].carcount;
-                var stid = rds[i].name;
-                for (var j = 0; j < rds[i].roadloc.length; j = j + 1) {
-                    highlight.push(new google.maps.LatLng(rds[i].roadloc[j][1], rds[i].roadloc[j][0]))
-                }
-                var color_str = chooseColor(Number(cc));
-                var route = new google.maps.Polyline({
-                    path: highlight,
-                    strokeColor: color_str,
-                    strokeOpacity: 1,
-                    strokeWeight: 5,
-                    title: stid,
-                    map: map
-                });
-                google.maps.event.addListener(route, "click", function(event) {
-                    var base_url = "http://52.23.167.189/batch/";
-                    var key = this.title;
-                    window.open(base_url.concat(key));
-                });
-                roads.push(route);
-            }
-        }
-    );
-    if (REFRESH == 1) {
-        window.setTimeout(update_values, 1500);
-    }
-    else {
-        window.setTimeout(update_values, 3600000);
-    }
-}
-
-//update_values();
-*/
-
-
-/*
-function clearRoads() {
-    for (var i = 0; i < roads.length; i++) {
-	roads[i].setMap(null);
-    }
-    roads = [];
-}
-*/
 
 google.maps.event.addDomListener(window, 'load', initialize);

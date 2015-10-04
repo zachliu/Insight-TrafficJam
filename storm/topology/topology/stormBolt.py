@@ -2,6 +2,7 @@
 # It stores the unoccupied cab details into HBase which are then shown on UI. The HBase
 # table is refreshed every 5 seconds using a tick tuple.
 import logging
+import time
 from pyleus.storm import SimpleBolt
 #import happybase
 #import json
@@ -20,12 +21,12 @@ KEYSPACE = "keyspace_realtime"
 
 log = logging.getLogger('TestData')
 
-log.debug("creating keyspace...")
+#log.debug("creating keyspace...")
 
 rows = session.execute("SELECT keyspace_name FROM system.schema_keyspaces")
 if KEYSPACE in [row[0] for row in rows]:
-    log.debug("There is an existing keyspace...")
-    log.debug("setting keyspace...")
+    #log.debug("There is an existing keyspace...")
+    #log.debug("setting keyspace...")
     session.set_keyspace(KEYSPACE)
 else:
     session.execute("""
@@ -33,10 +34,10 @@ else:
         WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '3' }
         """ % KEYSPACE)
 
-    log.debug("setting keyspace...")
+    #log.debug("setting keyspace...")
     session.set_keyspace(KEYSPACE)
 
-    log.debug("creating table...")
+    #log.debug("creating table...")
     session.execute("""
         CREATE TABLE mytable (
             thekey text,
@@ -78,7 +79,7 @@ class firstBolt(SimpleBolt):
         result, = tup.values
         timestamp, data = result.split('@')
         listofstreets = data.split('#')
-
+        err = 0
         for street in listofstreets:
             stID, direction, lane, carCount = street.split(',')
             try:
@@ -99,14 +100,19 @@ class firstBolt(SimpleBolt):
                             ##log.debug(stID + ' has been removed from table.')
                             #self.new = True
             except ValueError:
+                err += 1
                 log.debug('carCount is an empty string!   ---   ' + timestamp + ' ' + street)
 
     def process_tick(self):
         cur_streets = self.busyStreets
         if self.new is True:
+            start = time.time()
+            cnt = 0
             for stID, val in cur_streets.iteritems():
                 session.execute(query, dict(key=stID, a=val['ts'], b=val['cc']))
+                cnt += 1
                 #log.debug(stID + ' has been written into cassandra.')
+            log.debug(str(time.time() - start) + ' ' + str(cnt))
             self.new = False
 
 if __name__ == '__main__':

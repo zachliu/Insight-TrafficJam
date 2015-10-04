@@ -8,54 +8,44 @@
   <meta http-equiv="content-type" content="text/html; charset=windows-1252" />
   <link rel="stylesheet" type="text/css" href="static/style.css" />
   <!-- modernizr enables HTML5 elements and feature detects -->
-  <!--<script type="text/javascript" src="static/modernizr-1.5.min.js"></script> -->
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script type="text/javascript"
-    src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true">
+    src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=false">
   </script>
   <script src="static/map.js"></script>
+  <script src="static/FullScreenControl.js">
+  </script>
 </head>
 
 <body>
 <div id="main">
-  <header>
+  <header style="width: 940px">
     <div id="strapline">
-      <div id="welcome_slogan">
-	<h3>TrafficJam</h3>
+      <div id="welcome_slogan" style="padding-top: 0px;">
+      <nav>
+          <div id="menubar" style="padding-top: 0px;margin-left: 0px;">
+            <ul id="nav" style="width: 900px">
+              <li class="current"><a href="/" style="margin-left: 10px;">TrafficJam</a></li>
+              <li><a href="https://www.dot.ny.gov/divisions/engineering/technical-services/highway-data-services/hdsb" target="_blank">Download Data</a></li>
+              <li><a href="/slideshare" target="_blank">Slideshare</a></li>
+                <div id="floating-panel" style="padding-top: 5px;">
+                    <button onclick="startStreaming()">Start streaming</button>
+                    <button onclick="stopStreaming()">Stop streaming</button>
+                </div>
+            </ul>
+          </div><!--close menubar-->	
+        </nav>
       </div><!--close welcome_slogan-->
     </div><!--close strapline-->
-    <nav>
-      <div id="menubar">
-        <ul id="nav">
-          <li class="current"><a href="/">Home</a></li>
-          <li><a href="/batch">Batch Analysis</a></li>
-          <li><a href="/downloaddata">Download Data</a></li>
-          <li><a href="/aboutme">Slide Deck</a></li>
-        </ul>
-      </div><!--close menubar-->	
-    </nav>
   </header>
 
   <div id="site_content">
-    <div class="content_item">
-	<h3>A simulated real-time feed of traffic data from New York State Department of Transportation</h3>
-      </div><!--close content-->
-    <div id="map-container">
-        <div id="floating-panel">
-            <button onclick="startStreaming()">Start streaming</button>
-            <button onclick="stopStreaming()">Stop streaming</button>
-            <!--<button onclick="changeRadius()">Change radius</button>-->
-            <!--<button onclick="changeOpacity()">Change opacity</button>-->
-        </div>
+    <div id="map-container" style="padding-top: 0px;">
         <div id="map-canvas"></div>
     </div>
     <div id="content">
-      <div class="content_item">
-    	<p style="text-align:justify">The above map... Further information available on the subsequent tabs and github.</p>
-      </div>
-
 	<div class="content_item">
-	 <footer>
+	 <footer style="padding-top: 30px;">
 	  <span style="float: left; color:#FFF">
 	    &nbsp&nbsp&nbsp&nbsp Zach Liu
 	  </span>

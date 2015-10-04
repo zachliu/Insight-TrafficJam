@@ -67,8 +67,8 @@ def myParser(line):
 print "Reading data from the HDFS"
 conf = SparkConf().setAppName("myBatch")
 sc = SparkContext(conf=conf)
-#data = sc.textFile("hdfs://ec2-54-175-15-242.compute-1.amazonaws.com:9000/data/traffic/20150925151400_0.txt")
-data = sc.textFile("hdfs://ec2-54-174-177-48.compute-1.amazonaws.com:9000/data/traffic/20150930000400_0.txt")
+data = sc.textFile("hdfs://ec2-54-174-177-48.compute-1.amazonaws.com:9000/data/traffic/*.txt")
+
 
 # map reduce jop
 formatted_data = data.flatMap(lambda line: myParser(line)).\
