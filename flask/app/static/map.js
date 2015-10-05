@@ -92,10 +92,14 @@ function update_values_smart() {
             }
         }
     );
-
+    window.setTimeout(function(){ update_values_smart() }, 1000);
+/*
     if (REFRESH) {
         autotimer = window.setTimeout(function(){ update_values_smart() }, 1000);
     }
+*/
 }
+
+update_values_smart();
 
 google.maps.event.addDomListener(window, 'load', initialize);
