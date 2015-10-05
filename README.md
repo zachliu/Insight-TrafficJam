@@ -33,13 +33,13 @@ A distributed AWS cluster of four ec2 machines is being used for this project. A
 #Data Processing Framework
 <img src="https://github.com/zachliu/Insight-TrafficJam/blob/master/images/pipeline.png" alt="alt text" width="600" height="254">
 
-- **Ingestion Layer (Kafka):** The raw data is consumed by a message broker, configured in publish-subscribe mode. Related files: <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/kafka/producer.py">producer.py</a>, <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/kafka/kafka_consumer.py">kafka_consumer.py</a>.
+- **Ingestion Layer (Kafka):** The raw data is consumed by a message broker, configured in publish-subscribe mode. Related files: <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/kafka/producer.py">producer.py</a>, <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/kafka/consumer.py">consumer.py</a>.
 
 - **Batch Layer (HDFS, Spark):** A kafka consumer stores the data into HDFS. Additional columns are added to the dataset to generate metrics as described in the previous section. Following this, tables representing the aggregate views for serving queries at the user end are generated using Spark. Related Files: <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/spark/myBatch.py">myBatch.py</a>  
 
-- **Speed Layer (Storm):** The topology for processing real-time data comprises of a kafka-spout and a bolt (with tick interval frequency of 2.5 sec). The data is filtered to only store clean (uncorrupted) entries. Related files: <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/Storm/cab_topology/cab_topology/stormBolt.py">stormBolt.py</a>, <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/Storm/cab_topology/topology.yaml">topology.yaml</a>
+- **Speed Layer (Storm):** The topology for processing real-time data comprises of a kafka-spout and a bolt (with tick interval frequency of 2.5 sec). The data is filtered to only store clean (uncorrupted) entries. Related files: <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/Storm/topology/topology/stormBolt.py">stormBolt.py</a>, <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/Storm/topology/topology.yaml">topology.yaml</a>
 
-- **Front-end (Flask):** The car volume information for each road are rendered on Google Maps in terms of four colors and updated at 1 sec interval via Flask. Historical data is represented as line plot via Highcharts. Realted files: <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/flask/app/views.py">views.py</a>, <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/flask/app/static/batch.js">batch.js</a>, <a href="https://github.com/zachliu/Insight-TrafficJam/blob/master/flask/app/static/map.js">map.js</a>.
+- **Front-end (Flask):** The car volume information for each road are rendered on Google Maps in terms of four colors and updated at 1 sec interval via Flask. Historical data is represented as line plot via Highcharts. Realted files: <a href= "https://github.com/zachliu/Insight-TrafficJam/blob/master/flask/app/views.py">views.py</a>, <a href="https://github.com/zachliu/Insight-TrafficJam/blob/master/flask/app/static/map.js">map.js</a>.
 
 - **Libraries and APIs:** Cassandra, Pyleus, Kafka-python, Google Maps
 
