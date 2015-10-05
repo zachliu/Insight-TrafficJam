@@ -1,5 +1,5 @@
 # this program implements a kafka consumer that stores a data stream to HDFS.
-# It is subscribed to one topic (all cab data).
+# It is subscribed to one topic.
 
 import os
 #import sys

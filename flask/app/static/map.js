@@ -1,4 +1,4 @@
-// Render the markers for cab locations on Google Maps
+// Render the highlighted streets on Google Maps
 var NY = new google.maps.LatLng(42.830474, -75.527311);
 var map;
 var roads = [];
@@ -53,7 +53,7 @@ function chooseColor(cc) {
     }
 }
 
-
+// the key is only rendering the "changing" streets
 function update_values_smart() {
     $.getJSON('/realtime_roads',
         function(data) {

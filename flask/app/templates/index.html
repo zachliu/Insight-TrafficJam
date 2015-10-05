@@ -12,9 +12,30 @@
   <script type="text/javascript"
     src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=false">
   </script>
-  <script src="static/map.js"></script>
-  <script src="static/FullScreenControl.js">
-  </script>
+  <script type="text/javascript" src="static/map.js"></script>
+  <script type="text/javascript" src="static/FullScreenControl.js"></script>
+  <script>
+    //alert("Cookie is here!");
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+        }
+        return "";
+    }
+    co = getCookie("guid");
+    if (co == "") {
+        //alert("no cookie");
+        var val = parseInt(Math.random() * 10000) + "";
+        document.cookie="guid=" + val + "; path=/";
+    }
+    else {
+        //alert(co);
+    }
+   </script>
 </head>
 
 <body>
