@@ -91,7 +91,7 @@ def realtime_roads():
     for row in rows:
         stid = str(row[0].split('\'')[0])
         cc = str(row[2].split('\'')[0])
-	if len(roads) >= 2000:
+	if len(roads) >= 1500:
 	    break
         if (stid not in iptable[ip]) or ((stid in iptable[ip]) and (iptable[ip][stid] is not chooseColor(cc))):
             iptable[ip][stid] = chooseColor(cc)
