@@ -12,7 +12,7 @@ csvfiles = sorted(glob.glob("/home/ubuntu/*.csv"))    # get all data files
 
 def send_message(topic):
     producer = SimpleProducer(kafka)
-    bksize = 100  # bulk size
+    bksize = 400  # bulk size
     while True:
         for csv in csvfiles:
             nol = sum(1 for line in open(csv))

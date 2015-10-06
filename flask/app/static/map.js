@@ -77,7 +77,7 @@ function update_values_smart() {
                         path: highlight,
                         strokeColor: color_str,
                         strokeOpacity: 1,
-                        strokeWeight: 5,
+                        strokeWeight: 4,
                         title: stid,
                         map: map
                     });

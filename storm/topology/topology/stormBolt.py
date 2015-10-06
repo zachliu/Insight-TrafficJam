@@ -83,7 +83,8 @@ class firstBolt(SimpleBolt):
         for stID, val in cur_streets.iteritems():
             session.execute(query, dict(key=stID, a=val['ts'], b=val['cc']))
             cnt += 1
-        log.info('It took ' + str(time.time() - start) + ' sec to insert ' + str(cnt) + ' entries into Cassandra')
+        if cnt >= 1500:
+	    log.info('It took ' + str(time.time() - start) + ' sec to insert ' + str(cnt) + ' entries into Cassandra')
         self.busyStreets = {}
 
 if __name__ == '__main__':
