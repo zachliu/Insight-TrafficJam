@@ -41,6 +41,10 @@ def maps():
 def aboutme():
     return render_template('slideshare.html')
 
+@app.route('/demo')
+def demo():
+    return render_template('demo.html')
+
 
 Colors = [
     "#20CA20",    # green

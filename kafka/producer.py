@@ -7,13 +7,13 @@ import glob
 
 #kafka = KafkaClient("54.175.15.242:9092")
 kafka = KafkaClient("localhost:9092")
-csvfiles = sorted(glob.glob("/home/ubuntu/*.csv"))    # get all data files
 
 
 def send_message(topic):
     producer = SimpleProducer(kafka)
     bksize = 400  # bulk size
     while True:
+	csvfiles = sorted(glob.glob("/home/ubuntu/*.csv"))    # get all data files
         for csv in csvfiles:
             nol = sum(1 for line in open(csv))
             bar = progressbar.ProgressBar(maxval=nol,
