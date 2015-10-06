@@ -8,12 +8,6 @@
   <meta http-equiv="content-type" content="text/html; charset=windows-1252" />
   <link rel="stylesheet" type="text/css" href="static/style.css" />
   <!-- modernizr enables HTML5 elements and feature detects -->
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-  <script type="text/javascript"
-    src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=false">
-  </script>
-  <script type="text/javascript" src="static/map.js"></script>
-  <script type="text/javascript" src="static/FullScreenControl.js"></script>
   <script>
     //alert("Cookie is here!");
     function getCookie(cname) {
@@ -29,13 +23,22 @@
     co = getCookie("guid");
     if (co == "") {
         //alert("no cookie");
-        var val = parseInt(Math.random() * 10000) + "";
-        document.cookie="guid=" + val + "; path=/";
+	var d = new Date();
+	var t = d.getTime();
+        var val2 = parseInt(Math.random() * 10000) + "";
+	var val1 = parseInt(t) + "";
+	d.setTime(t + (0.05*24*60*60*1000));
+	var expires = "expires="+d.toUTCString();
+        document.cookie="guid=" + val1 + val2 + "; " + expires  + "; path=/";
     }
     else {
         //alert(co);
     }
    </script>
+   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=false"></script>
+   <script type="text/javascript" src="static/map.js"></script>
+   <script type="text/javascript" src="static/FullScreenControl.js"></script>
 </head>
 
 <body>
