@@ -27,7 +27,7 @@
 	var t = d.getTime();
         var val2 = parseInt(Math.random() * 10000) + "";
 	var val1 = parseInt(t) + "";
-	d.setTime(t + (0.05*24*60*60*1000));
+	d.setTime(t + (1*24*60*60*1000));
 	var expires = "expires="+d.toUTCString();
         document.cookie="guid=" + val1 + val2 + "; " + expires  + "; path=/";
     }

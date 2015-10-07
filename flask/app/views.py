@@ -8,6 +8,7 @@ import geojson
 from geojson import Feature, MultiLineString, FeatureCollection
 import time
 import sys
+import datetime
 
 #cluster = Cluster(['54.175.15.242'])
 cluster = Cluster(['54.174.177.48'])
@@ -71,7 +72,8 @@ class Printer():
     Print things to stdout on one line dynamically
     """
     def __init__(self, data):
-        sys.stdout.write("\r\x1b[K" + data.__str__())
+        sys.stdout.write(data.__str__() + '\r')        
+        #sys.stdout.write("\r\x1b[K" + data.__str__())
         sys.stdout.flush()
 
 
@@ -111,7 +113,8 @@ def realtime_roads():
                 for entry in listofpairs:
                     roadloc.append(entry.split(','))
                 roads.append({'name': stid, 'carcount': cc, 'roadloc': roadloc})
-    Printer(str(counter) + ' ip: ' + ip + " " + str(len(roads)))
+    dt = str(datetime.datetime.now())    
+    Printer(dt + ' ' + str(counter) + ' ip: ' + ip + ' ' + str(len(roads)))
     return jsonify(roads=roads)
 
 
