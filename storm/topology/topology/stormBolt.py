@@ -3,15 +3,15 @@
 
 import logging
 import time
+import datetime
 from pyleus.storm import SimpleBolt
 
 from cassandra import ConsistencyLevel
 from cassandra.cluster import Cluster
 from cassandra.query import SimpleStatement
-from cassandra.query import BatchStatement
 
-#cluster = Cluster(['54.175.15.242'])
-cluster = Cluster(['54.174.177.48'])
+cluster = Cluster(['54.175.15.242'])
+#cluster = Cluster(['54.174.177.48'])
 session = cluster.connect()
 KEYSPACE = "keyspace_realtime"
 
@@ -46,8 +46,6 @@ insert = session.prepare("""
     INSERT INTO mytable (thekey, col1, col2)
     VALUES (?, ?, ?)
     """)
-
-batch = BatchStatement(consistency_level=ConsistencyLevel.QUORUM)
 
 
 class firstBolt(SimpleBolt):
@@ -84,7 +82,8 @@ class firstBolt(SimpleBolt):
             session.execute(query, dict(key=stID, a=val['ts'], b=val['cc']))
             cnt += 1
         if cnt >= 1500:
-	    log.info('It took ' + str(time.time() - start) + ' sec to insert ' + str(cnt) + ' entries into Cassandra')
+            dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            log.info(dt + ': It took ' + "{:.2f}".format(time.time() - start) + ' sec to insert ' + str(cnt) + ' entries into Cassandra')
         self.busyStreets = {}
 
 if __name__ == '__main__':

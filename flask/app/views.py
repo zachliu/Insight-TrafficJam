@@ -10,8 +10,8 @@ import time
 import sys
 import datetime
 
-#cluster = Cluster(['54.175.15.242'])
-cluster = Cluster(['54.174.177.48'])
+cluster = Cluster(['54.175.15.242'])
+#cluster = Cluster(['54.174.177.48'])
 session_real = cluster.connect()
 session_batch = cluster.connect()
 session_findname = cluster.connect()
@@ -72,7 +72,7 @@ class Printer():
     Print things to stdout on one line dynamically
     """
     def __init__(self, data):
-        sys.stdout.write(data.__str__() + '\r')        
+        sys.stdout.write(data.__str__() + '\r')
         #sys.stdout.write("\r\x1b[K" + data.__str__())
         sys.stdout.flush()
 
@@ -83,7 +83,7 @@ counter = 0
 
 @app.route('/realtime_roads')
 def realtime_roads():
-    co = request.cookies["guid"]
+    co = request.cookies["session_id"]
     ip = request.remote_addr + '.' + co    # get the user ip and cookie
     if ip not in iptable:
         iptable[ip] = {}
@@ -97,8 +97,8 @@ def realtime_roads():
     for row in rows:
         stid = str(row[0].split('\'')[0])
         cc = str(row[2].split('\'')[0])
-	if len(roads) >= 1500:
-	    break
+        if len(roads) >= 1500:
+            break
         if (stid not in iptable[ip]) or ((stid in iptable[ip]) and (iptable[ip][stid] is not chooseColor(cc))):
             iptable[ip][stid] = chooseColor(cc)
             start = time.time()
@@ -113,8 +113,8 @@ def realtime_roads():
                 for entry in listofpairs:
                     roadloc.append(entry.split(','))
                 roads.append({'name': stid, 'carcount': cc, 'roadloc': roadloc})
-    dt = str(datetime.datetime.now())    
-    Printer(dt + ' ' + str(counter) + ' ip: ' + ip + ' ' + str(len(roads)))
+    dt = str(datetime.datetime.now())
+    Printer(dt + ' ' + str(len(iptable)) + ' ip: ' + ip + ' ' + str(len(roads)))
     return jsonify(roads=roads)
 
 

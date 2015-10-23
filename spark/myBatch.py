@@ -5,8 +5,8 @@ from cassandra.cluster import Cluster
 from cassandra.query import SimpleStatement
 
 # set up cassandra
-#cluster = Cluster(['54.175.15.242'])
-cluster = Cluster(['54.174.177.48'])
+cluster = Cluster(['54.175.15.242'])
+#cluster = Cluster(['54.174.177.48'])
 session = cluster.connect()
 KEYSPACE = "keyspace_batch"
 

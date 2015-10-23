@@ -8,37 +8,12 @@
   <meta http-equiv="content-type" content="text/html; charset=windows-1252" />
   <link rel="stylesheet" type="text/css" href="static/style.css" />
   <!-- modernizr enables HTML5 elements and feature detects -->
-  <script>
-    //alert("Cookie is here!");
-    function getCookie(cname) {
-        var name = cname + "=";
-        var ca = document.cookie.split(';');
-        for(var i=0; i<ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0)==' ') c = c.substring(1);
-            if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
-        }
-        return "";
-    }
-    co = getCookie("guid");
-    if (co == "") {
-        //alert("no cookie");
-	var d = new Date();
-	var t = d.getTime();
-        var val2 = parseInt(Math.random() * 10000) + "";
-	var val1 = parseInt(t) + "";
-	d.setTime(t + (1*24*60*60*1000));
-	var expires = "expires="+d.toUTCString();
-        document.cookie="guid=" + val1 + val2 + "; " + expires  + "; path=/";
-    }
-    else {
-        //alert(co);
-    }
-   </script>
-   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=false"></script>
-   <script type="text/javascript" src="static/map.js"></script>
-   <script type="text/javascript" src="static/FullScreenControl.js"></script>
+  <script src="http://getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script>
+  <script type="text/javascript" src="static/cookie.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=false"></script>
+  <script type="text/javascript" src="static/map.js"></script>
+  <script type="text/javascript" src="static/FullScreenControl.js"></script>
 </head>
 
 <body>
@@ -52,13 +27,7 @@
               <li class="current"><a href="/" style="margin-left: 10px;">TrafficJam</a></li>
               <li><a href="https://www.dot.ny.gov/divisions/engineering/technical-services/highway-data-services/hdsb" target="_blank">Download Data</a></li>
               <li><a href="/slideshare" target="_blank">Slideshare</a></li>
-	      <li><a href="/demo" target="_blank">Demo</a></li>
-<!--
-                <div id="floating-panel" style="padding-top: 5px;">
-                    <button onclick="startStreaming()">Start streaming</button>
-                    <button onclick="stopStreaming()">Stop streaming</button>
-                </div>
--->
+	     <li><a href="/demo" target="_blank">Video</a></li>
             </ul>
           </div><!--close menubar-->	
         </nav>
@@ -74,7 +43,7 @@
 	<div class="content_item">
 	 <footer style="padding-top: 30px;">
 	  <span style="float: left; color:#FFF">
-	    &nbsp&nbsp&nbsp&nbsp Zach Liu
+	    &nbsp&nbsp&nbsp&nbsp <a href="https://www.cs.drexel.edu/~zl54/" target="_blank">Zach Liu</a>
 	  </span>
 	  <span style="float: right; color:#FFF">
 	    <a href="mailto:zach.z.liu@gmail.com">Email</a>     |
@@ -87,6 +56,5 @@
   </div><!--close site_content-->  	
 
 </div><!--close main-->
-
 </body>
 </html>

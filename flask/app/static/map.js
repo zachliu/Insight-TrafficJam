@@ -92,7 +92,7 @@ function update_values_smart() {
             }
         }
     );
-    window.setTimeout(function(){ update_values_smart() }, 1000);
+    window.setTimeout(function(){ update_values_smart() }, 1500);
 /*
     if (REFRESH) {
         autotimer = window.setTimeout(function(){ update_values_smart() }, 1000);

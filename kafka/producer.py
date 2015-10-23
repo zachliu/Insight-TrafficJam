@@ -22,7 +22,7 @@ class Printer():
 
 def send_message(topic):
     producer = SimpleProducer(kafka)
-    bksize = 400  # bulk size
+    bksize = 500  # bulk size
     while True:
         csvfiles = sorted(glob.glob("/home/ubuntu/*.csv"))    # get all data files
         for csv in csvfiles:
@@ -45,7 +45,7 @@ def send_message(topic):
                     time.sleep(1)
             #bar.finish()
             #print "File " + csv + " completed!"
-            dt = str(datetime.datetime.now())            
+            dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             Printer("File " + csv + " completed at " + dt)
             sys.stdout.flush()
             ifile.close()
