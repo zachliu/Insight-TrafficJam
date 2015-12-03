@@ -10,21 +10,21 @@ import time
 import sys
 import datetime
 
-cluster = Cluster(['54.175.15.242'])
-#cluster = Cluster(['54.174.177.48'])
-session_real = cluster.connect()
-session_batch = cluster.connect()
-session_findname = cluster.connect()
-session_findloc = cluster.connect()
+#cluster = Cluster(['54.175.15.242'])
+##cluster = Cluster(['54.174.177.48'])
+#session_real = cluster.connect()
+#session_batch = cluster.connect()
+#session_findname = cluster.connect()
+#session_findloc = cluster.connect()
 
-session_findloc.set_keyspace("road_geoloc")
-start = time.time()
-lookup = {}
-cass = session_findloc.execute("SELECT * FROM header")
+#session_findloc.set_keyspace("road_geoloc")
+#start = time.time()
+#lookup = {}
+#cass = session_findloc.execute("SELECT * FROM header")
 
-for e in cass:
-    lookup[str(e.stid)] = str(e.coord)
-print time.time() - start
+#for e in cass:
+    #lookup[str(e.stid)] = str(e.coord)
+#print time.time() - start
 
 
 @app.route('/')
@@ -40,31 +40,39 @@ def maps():
 
 @app.route('/slideshare')
 def aboutme():
+    co = request.cookies["session_id"]
+    ip = request.remote_addr + '.' + co    # get the user ip and cookie
+    dt = str(datetime.datetime.now())
+    Printer(dt + ' ' + str(len(iptable)) + ' ip: ' + ip + ' ' + 'slideshare')
     return render_template('slideshare.html')
 
 @app.route('/demo')
 def demo():
+    co = request.cookies["session_id"]
+    ip = request.remote_addr + '.' + co    # get the user ip and cookie
+    dt = str(datetime.datetime.now())
+    Printer(dt + ' ' + str(len(iptable)) + ' ip: ' + ip + ' ' + 'video')
     return render_template('demo.html')
 
 
-Colors = [
-    "#20CA20",    # green
-    "#FF5800",    # purple
-    "#F50000",    # red
-    "#941313"     # dark red
-]
+#Colors = [
+    #"#20CA20",    # green
+    #"#FF5800",    # purple
+    #"#F50000",    # red
+    #"#941313"     # dark red
+#]
 
 
-def chooseColor(cc):
-    cc = int(cc)
-    if cc > 2000:
-        return Colors[3]
-    elif cc > 1000:
-        return Colors[2]
-    elif cc > 500:
-        return Colors[1]
-    else:
-        return Colors[0]
+#def chooseColor(cc):
+    #cc = int(cc)
+    #if cc > 2000:
+        #return Colors[3]
+    #elif cc > 1000:
+        #return Colors[2]
+    #elif cc > 500:
+        #return Colors[1]
+    #else:
+        #return Colors[0]
 
 
 class Printer():
@@ -89,8 +97,9 @@ def realtime_roads():
         iptable[ip] = {}
     global counter
     counter += 1
-    session_real.set_keyspace("keyspace_realtime")
-    rows = session_real.execute("SELECT * FROM mytable")
+    rows = []
+    #session_real.set_keyspace("keyspace_realtime")
+    #rows = session_real.execute("SELECT * FROM mytable")
     roads = []
     total = 0
 
@@ -114,11 +123,12 @@ def realtime_roads():
                     roadloc.append(entry.split(','))
                 roads.append({'name': stid, 'carcount': cc, 'roadloc': roadloc})
     dt = str(datetime.datetime.now())
-    Printer(dt + ' ' + str(len(iptable)) + ' ip: ' + ip + ' ' + str(len(roads)))
+    #Printer(dt + ' ' + str(len(iptable)) + ' ip: ' + ip + ' ' + str(len(roads)))
+    Printer(dt + ' ' + str(len(iptable)) + ' ip: ' + ip + ' ' + 'main page')
     return jsonify(roads=roads)
 
 
-session_all = cluster.connect()
+#session_all = cluster.connect()
 
 
 @app.route('/all_roads')
