@@ -1,5 +1,5 @@
 from app import app
-from cassandra.cluster import Cluster
+#from cassandra.cluster import Cluster
 import flask
 from flask import jsonify, render_template, make_response, request
 import json
@@ -9,6 +9,7 @@ from geojson import Feature, MultiLineString, FeatureCollection
 import time
 import sys
 import datetime
+import MySQLdb as mdb
 
 #cluster = Cluster(['54.175.15.242'])
 ##cluster = Cluster(['54.174.177.48'])
@@ -26,6 +27,18 @@ import datetime
     #lookup[str(e.stid)] = str(e.coord)
 #print time.time() - start
 
+# -------------------------------------------------------------------------------------------------
+db_lookup = mdb.connect("localhost", "root", "", "traffic")    # Open database connection
+cursor = db_lookup.cursor()    # prepare a cursor object using cursor() method
+start = time.time()
+lookup = {}
+cursor.execute("SELECT * FROM roadloc")
+data = cursor.fetchall()
+for e in data:
+    lookup[str(e[0])] = str(e[1])
+print time.time() - start
+db_lookup.close()
+# -------------------------------------------------------------------------------------------------
 
 @app.route('/')
 @app.route('/index')
@@ -55,24 +68,24 @@ def demo():
     return render_template('demo.html')
 
 
-#Colors = [
-    #"#20CA20",    # green
-    #"#FF5800",    # purple
-    #"#F50000",    # red
-    #"#941313"     # dark red
-#]
+Colors = [
+    "#20CA20",    # green
+    "#FF5800",    # purple
+    "#F50000",    # red
+    "#941313"     # dark red
+]
 
 
-#def chooseColor(cc):
-    #cc = int(cc)
-    #if cc > 2000:
-        #return Colors[3]
-    #elif cc > 1000:
-        #return Colors[2]
-    #elif cc > 500:
-        #return Colors[1]
-    #else:
-        #return Colors[0]
+def chooseColor(cc):
+    cc = int(cc)
+    if cc > 2000:
+        return Colors[3]
+    elif cc > 1000:
+        return Colors[2]
+    elif cc > 500:
+        return Colors[1]
+    else:
+        return Colors[0]
 
 
 class Printer():
@@ -100,12 +113,19 @@ def realtime_roads():
     rows = []
     #session_real.set_keyspace("keyspace_realtime")
     #rows = session_real.execute("SELECT * FROM mytable")
+    # ---------------------------------------------------------------------------------------------
+    db = mdb.connect("localhost", "root", "", "traffic")    # Open database connection
+    cursor = db.cursor()    # prepare a cursor object using cursor() method
+    cursor.execute("SELECT * FROM realtime")
+    rows = cursor.fetchall()
+    db.close()
+    # ---------------------------------------------------------------------------------------------
     roads = []
     total = 0
 
     for row in rows:
         stid = str(row[0].split('\'')[0])
-        cc = str(row[2].split('\'')[0])
+        cc = str(row[4])
         if len(roads) >= 1500:
             break
         if (stid not in iptable[ip]) or ((stid in iptable[ip]) and (iptable[ip][stid] is not chooseColor(cc))):
@@ -123,8 +143,8 @@ def realtime_roads():
                     roadloc.append(entry.split(','))
                 roads.append({'name': stid, 'carcount': cc, 'roadloc': roadloc})
     dt = str(datetime.datetime.now())
-    #Printer(dt + ' ' + str(len(iptable)) + ' ip: ' + ip + ' ' + str(len(roads)))
-    Printer(dt + ' ' + str(len(iptable)) + ' ip: ' + ip + ' ' + 'main page')
+    Printer(dt + ' ' + str(len(iptable)) + ' ip: ' + ip + ' ' + str(len(roads)))
+    #Printer(dt + ' ' + str(len(iptable)) + ' ip: ' + ip + ' ' + 'main page')
     return jsonify(roads=roads)
 
 
@@ -133,8 +153,9 @@ def realtime_roads():
 
 @app.route('/all_roads')
 def all_roads():
-    session_all.set_keyspace("road_geoloc")
-    rows = session_all.execute("SELECT * FROM header")
+    rows = []
+    #session_all.set_keyspace("road_geoloc")
+    #rows = session_all.execute("SELECT * FROM header")
     array = []
     for row in rows:
         coords = row[1].split('\'')[0]
@@ -152,21 +173,23 @@ def all_roads():
     return jsonify(coll)
 
 
-@app.route("/batch/<stid>")
-def hichart(stid):
-    query = "SELECT yyyymm, carcount FROM keyspace_batch.mytable_RDD WHERE roadid = %s"
-    response = session_batch.execute(query, parameters=[int(stid)])
+@app.route("/batch/<rcid>")
+def hichart(rcid):
 
-    query = "SELECT rdn FROM station_header.header WHERE stid = %s"
-    name = session_findname.execute(query, parameters=[stid])
-    stname = str(name[0].rdn.split('\'')[0])
+    db = mdb.connect("localhost", "root", "", "traffic")
+    cursor = db.cursor()
+    cursor.execute("SELECT yyyymm, count FROM batch WHERE rcid = 010009")
+    response = cursor.fetchall()
+    db.close()
+
+    stname = ''
 
     array = []
     yyyy = []
     mm = []
     for val in response:
-        array.append(val.carcount)
-        key = str(val.yyyymm)
+        array.append(int(val[1]))
+        key = str(val[0])
         yyyy.append(int(key[:-2]))
         mm.append(int(key[4:]))
 

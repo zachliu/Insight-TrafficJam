@@ -82,7 +82,7 @@ function update_values_smart() {
                         map: map
                     });
                     google.maps.event.addListener(route, "click", function(event) {
-                        var base_url = "http://52.23.167.189/batch/";
+                        var base_url = "http://54.213.197.33/batch/";
                         var key = this.title;
                         window.open(base_url.concat(key));
                     });
