@@ -1,5 +1,5 @@
 // Render the highlighted streets on Google Maps
-var NY = new google.maps.LatLng(42.830474, -75.527311);
+var NY = new google.maps.LatLng(40.672622, -73.958389);
 var map;
 var roads = [];
 var all_roads = [];
@@ -17,11 +17,19 @@ var Colors = [
 
 function initialize() {
     var mapOptions = {
-	zoom: 7,
+	zoom: 11,
 	center: NY
     };
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(new FullScreenControl(map));
+    map.addListener('zoom_changed', function() {
+        $.getJSON('/zoom_changed', {
+            zoom: map.getZoom()
+        }, function(data) {
+            //$("#result").text(data.result);
+            //alert(data.result);
+        });
+    });
 }
 
 function startStreaming() {
@@ -53,7 +61,7 @@ function chooseColor(cc) {
     }
 }
 
-// the key is only rendering the "changing" streets
+// the key idea is to only render the "changing" streets
 function update_values_smart() {
     $.getJSON('/realtime_roads',
         function(data) {
@@ -70,19 +78,19 @@ function update_values_smart() {
                 }
                 else {
                     var highlight = [];
-                    for (var j = 0; j < rds[i].roadloc.length; j = j + 1) {
-                        highlight.push(new google.maps.LatLng(rds[i].roadloc[j][1], rds[i].roadloc[j][0]))
+                    for (var j = 0; j < rds[i].coord.length; j = j + 1) {
+                        highlight.push(new google.maps.LatLng(rds[i].coord[j][1], rds[i].coord[j][0]))
                     }
                     var route = new google.maps.Polyline({
                         path: highlight,
                         strokeColor: color_str,
                         strokeOpacity: 1,
-                        strokeWeight: 4,
+                        strokeWeight: 3,
                         title: stid,
                         map: map
                     });
                     google.maps.event.addListener(route, "click", function(event) {
-                        var base_url = "http://54.213.197.33/batch/";
+                        var base_url = "http://trafficjam.today/batch/";
                         var key = this.title;
                         window.open(base_url.concat(key));
                     });

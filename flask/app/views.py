@@ -27,15 +27,22 @@ import MySQLdb as mdb
     #lookup[str(e.stid)] = str(e.coord)
 #print time.time() - start
 
+zoom = 7
+
 # -------------------------------------------------------------------------------------------------
 db_lookup = mdb.connect("localhost", "root", "", "traffic")    # Open database connection
 cursor = db_lookup.cursor()    # prepare a cursor object using cursor() method
 start = time.time()
-lookup = {}
+roadloc = {}
+header = {}
 cursor.execute("SELECT * FROM roadloc")
 data = cursor.fetchall()
 for e in data:
-    lookup[str(e[0])] = str(e[1])
+    roadloc[str(e[0])] = str(e[1])
+cursor.execute("SELECT * FROM header")
+data = cursor.fetchall()
+for e in data:
+    header[str(e[0])] = (e[1], str(e[2]), str(e[3]), str(e[4]), e[5])
 print time.time() - start
 db_lookup.close()
 # -------------------------------------------------------------------------------------------------
@@ -125,23 +132,23 @@ def realtime_roads():
 
     for row in rows:
         stid = str(row[0].split('\'')[0])
-        cc = str(row[4])
+        cc = str(row[1])
         if len(roads) >= 1500:
             break
         if (stid not in iptable[ip]) or ((stid in iptable[ip]) and (iptable[ip][stid] is not chooseColor(cc))):
             iptable[ip][stid] = chooseColor(cc)
             start = time.time()
             coords = ''
-            if stid in lookup:
-                coords = lookup[stid]
+            if stid in roadloc:
+                coords = roadloc[stid]
             total += time.time() - start
 
             if len(coords) is not 0:
-                roadloc = []
+                coord = []
                 listofpairs = coords.split(';')
                 for entry in listofpairs:
-                    roadloc.append(entry.split(','))
-                roads.append({'name': stid, 'carcount': cc, 'roadloc': roadloc})
+                    coord.append(entry.split(','))
+                roads.append({'name': stid, 'carcount': cc, 'coord': coord})
     dt = str(datetime.datetime.now())
     Printer(dt + ' ' + str(len(iptable)) + ' ip: ' + ip + ' ' + str(len(roads)))
     #Printer(dt + ' ' + str(len(iptable)) + ' ip: ' + ip + ' ' + 'main page')
@@ -149,6 +156,13 @@ def realtime_roads():
 
 
 #session_all = cluster.connect()
+
+
+@app.route('/zoom_changed')
+def add_numbers():
+    zoom = request.args.get('zoom', 0, type=int)
+    #Printer(" === " + str(zoom) + " === ")
+    return jsonify(result=(zoom) * 10)
 
 
 @app.route('/all_roads')
@@ -160,12 +174,12 @@ def all_roads():
     for row in rows:
         coords = row[1].split('\'')[0]
         if len(coords) is not 0:
-            roadloc = []
+            coord = []
             listofpairs = coords.split(';')
             for entry in listofpairs:
                 lat, lon = entry.split(',')
-                roadloc.append((float(lat), float(lon)))
-            array.append(roadloc)
+                coord.append((float(lat), float(lon)))
+            array.append(coord)
     formated = MultiLineString(array)
     my_feature = Feature(geometry=formated)
     coll = FeatureCollection([my_feature])
@@ -176,13 +190,24 @@ def all_roads():
 @app.route("/batch/<rcid>")
 def hichart(rcid):
 
-    db = mdb.connect("localhost", "root", "", "traffic")
-    cursor = db.cursor()
-    cursor.execute("SELECT yyyymm, count FROM batch WHERE rcid = 010009")
-    response = cursor.fetchall()
-    db.close()
+    #query = "SELECT yyyymm, carcount FROM keyspace_batch.mytable_RDD WHERE roadid = %s"
+    #response = session_batch.execute(query, parameters=[int(stid)])
 
-    stname = ''
+    # ---------------------------------------------------------------------------------------------
+    db = mdb.connect("localhost", "root", "", "traffic")    # Open database connection
+    cursor = db.cursor()    # prepare a cursor object using cursor() method
+    cursor.execute("SELECT yyyymm, count FROM batch WHERE rcid = %s" % str(rcid))
+    response = cursor.fetchall()
+    # ---------------------------------------------------------------------------------------------
+
+    #query = "SELECT rdn FROM station_header.header WHERE stid = %s"
+    #name = session_findname.execute(query, parameters=[stid])
+    #stname = str(name[0].rdn.split('\'')[0])
+
+    # ---------------------------------------------------------------------------------------------
+    tup = header[str(rcid)]
+    stname = tup[1] + ', ' + tup[2] + ', ' + tup[3]
+    # ---------------------------------------------------------------------------------------------
 
     array = []
     yyyy = []
