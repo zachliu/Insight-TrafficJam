@@ -90,7 +90,7 @@ function update_values_smart() {
                         map: map
                     });
                     google.maps.event.addListener(route, "click", function(event) {
-                        var base_url = "http://trafficjam.today/batch/";
+                        var base_url = "https://trafficjam.today/batch/";
                         var key = this.title;
                         window.open(base_url.concat(key));
                     });

@@ -9,7 +9,8 @@ from geojson import Feature, MultiLineString, FeatureCollection
 import time
 import sys
 import datetime
-import MySQLdb as mdb
+# import MySQLdb as mdb
+import pymysql as pdb
 
 #cluster = Cluster(['54.175.15.242'])
 ##cluster = Cluster(['54.174.177.48'])
@@ -30,7 +31,7 @@ import MySQLdb as mdb
 zoom = 7
 
 # -------------------------------------------------------------------------------------------------
-db_lookup = mdb.connect("localhost", "root", "", "traffic")    # Open database connection
+db_lookup = pdb.connect("localhost", "root", "", "traffic")    # Open database connection
 cursor = db_lookup.cursor()    # prepare a cursor object using cursor() method
 start = time.time()
 roadloc = {}
@@ -43,7 +44,7 @@ cursor.execute("SELECT * FROM header")
 data = cursor.fetchall()
 for e in data:
     header[str(e[0])] = (e[1], str(e[2]), str(e[3]), str(e[4]), e[5])
-print time.time() - start
+print(time.time() - start)
 db_lookup.close()
 # -------------------------------------------------------------------------------------------------
 
@@ -121,7 +122,7 @@ def realtime_roads():
     #session_real.set_keyspace("keyspace_realtime")
     #rows = session_real.execute("SELECT * FROM mytable")
     # ---------------------------------------------------------------------------------------------
-    db = mdb.connect("localhost", "root", "", "traffic")    # Open database connection
+    db = pdb.connect("localhost", "root", "", "traffic")    # Open database connection
     cursor = db.cursor()    # prepare a cursor object using cursor() method
     cursor.execute("SELECT * FROM realtime")
     rows = cursor.fetchall()
@@ -183,9 +184,8 @@ def all_roads():
     formated = MultiLineString(array)
     my_feature = Feature(geometry=formated)
     coll = FeatureCollection([my_feature])
-    print "Show all roads"
+    print("Show all roads")
     return jsonify(coll)
-
 
 @app.route("/batch/<rcid>")
 def hichart(rcid):
@@ -194,7 +194,7 @@ def hichart(rcid):
     #response = session_batch.execute(query, parameters=[int(stid)])
 
     # ---------------------------------------------------------------------------------------------
-    db = mdb.connect("localhost", "root", "", "traffic")    # Open database connection
+    db = pdb.connect("localhost", "root", "", "traffic")    # Open database connection
     cursor = db.cursor()    # prepare a cursor object using cursor() method
     cursor.execute("SELECT yyyymm, count FROM batch WHERE rcid = %s" % str(rcid))
     response = cursor.fetchall()
@@ -220,6 +220,37 @@ def hichart(rcid):
 
     return render_template("batch_query.html", array=array, stname=stname, yyyy=yyyy, mm=mm)
 
+@app.route("/query/<rcid>")
+def query(rcid):
+    #query = "SELECT yyyymm, carcount FROM keyspace_batch.mytable_RDD WHERE roadid = %s"
+    #response = session_batch.execute(query, parameters=[int(stid)])
+
+    # ---------------------------------------------------------------------------------------------
+    db = pdb.connect("localhost", "root", "", "traffic")    # Open database connection
+    cursor = db.cursor()    # prepare a cursor object using cursor() method
+    cursor.execute("SELECT yyyymm, count FROM batch WHERE rcid = %s" % str(rcid))
+    response = cursor.fetchall()
+    # ---------------------------------------------------------------------------------------------
+
+    #query = "SELECT rdn FROM station_header.header WHERE stid = %s"
+    #name = session_findname.execute(query, parameters=[stid])
+    #stname = str(name[0].rdn.split('\'')[0])
+
+    # ---------------------------------------------------------------------------------------------
+    tup = header[str(rcid)]
+    stname = tup[1] + ', ' + tup[2] + ', ' + tup[3]
+    # ---------------------------------------------------------------------------------------------
+
+    array = []
+    yyyy = []
+    mm = []
+    for val in response:
+        array.append(int(val[1]))
+        key = str(val[0])
+        yyyy.append(int(key[:-2]))
+        mm.append(int(key[4:]))
+
+    return jsonify(array=array, stname=stname, yyyy=yyyy, mm=mm)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
